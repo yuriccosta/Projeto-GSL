@@ -1,27 +1,20 @@
 #include <stdio.h>
 #include <gsl/gsl_rng.h>
 
-int
-main (void)
-{
-  const gsl_rng_type * T;
-  gsl_rng_default_seed = 20;
-  gsl_rng * r;
+int  main (void)
+{   
+    // Definindo o tipo do gerador
+    const gsl_rng_type * T = gsl_rng_taus;
+    // Alocando memória e passando a instância para o ponteiro r
+    gsl_rng  * r = gsl_rng_alloc(T);
 
-  int i, n = 10;
+    
 
-  //gsl_rng_env_setup();
 
-  T = gsl_rng_default;
-  r = gsl_rng_alloc (T);
+    void * state = gsl_rng_state(r);
+    size_t n = gsl_rng_size(r);
+    printf("%p\n", state);
+    gsl_rng_free (r);
 
-  for (i = 0; i < n; i++)
-    {
-      double u = gsl_rng_uniform (r);
-      printf ("%.5f\n", u);
-    }
-
-  gsl_rng_free (r);
-
-  return 0;
+    return 0;
 }

@@ -56,8 +56,41 @@ Como utilizar a biblioteca para gerar números aleatórios:
             Retorna o menor valor que gsl_rng_get() consegue retornar. Geralmente é zero, mas existem alguns que não conseguem retornar zero e para esses
             o menor valor é 1
         
+        Essas funções juntas podem ser utilizadas para acessar o estado diretamente:
+            void *gsl_rng_state(const gsl_rng *r)
+                Retorna o ponteiro para o estado do gerador r
+            size_t gsl_rng_size(const gsl_rng *r)
+                Retorna o tamanho do gerador r
         
+        const gsl_rng_type **gsl_rng_types_setup(void)
+            Retorna um ponteiro para um array de todos os tipos de geradores disponíveis, ecerrado por um ponteiro NULL.
+            Essa função deve ser chamada uma vez no começo do programa se for necessária.
 
+    Variáveis de ambiente
+        GSL_RNG_TYPE
+            Esta variável de ambiente especifica o gerador de números aleatórios padrão. Deve ser o nome de um gerador, como tausou mt19937.
+
+        GSL_RNG_SEED
+            Esta variável de ambiente especifica a semente padrão para o aleatório gerador de números
+
+        gsl_rng_type * gsl_rng_default
+            Especifica o gerador padrão e pode ser inicializado de GSL_RNG_TYPE usando gsl_rng_env_setup
+                extern const gsl_rng_type *gsl_rng_default
+        
+        unsigned long int gsl_rng_default_seed
+            Especifica a semente para o gerador padrão e pode ser inicializado de GSL_RNG_SEED usando gsl_rng_env_setup
+            É definido com zero por padrão
+                extern unsigned long int gsl_rng_default_seed
+        
+        const gsl_rng_type *gsl_rng_env_setup(void)
+            Lê as variáveis de ambiente  GSL_RNG_TYPE e GSL_RNG_SEED e usa seus valores para definir suas correspondentes
+            variáveis da biblioteca gsl_rng_default e gsl_rng_default_seed.
+            O valor de GSL_RNG_SEEDé convertido em um unsigned long int usando a função da biblioteca C strtoul().
+            Se não especificar um gerador para GSL_RNG_TYPE então gsl_rng_mt19937 é usado como padrão. 
+            O valor inicial de gsl_rng_default_seed é zero. Utilizando a linha de comando conseguimos definir o gerador padrão
+            e a semente: $ GSL_RNG_TYPE="taus" GSL_RNG_SEED=123 ./executavel
+
+        
 
 
 
