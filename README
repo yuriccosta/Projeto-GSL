@@ -1,0 +1,7 @@
+Programa feito para executar um bench mark com base na multiplicação de matrizes de número flutuante
+
+
+Uso:
+
+    -s, --size: Defina o tamanho de linhas e colunas, nesta ordem.
+    

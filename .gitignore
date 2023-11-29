@@ -1,0 +1,11 @@
+#ignorando algumas pastas
+Criptografia\ C/
+output/
+.vscode/
+Agenda/
+
+#ignorando as provas compactadas
+*.tar.gz
+
+#ignorando alguns arquivos
+README

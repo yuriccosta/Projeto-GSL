@@ -1,0 +1,66 @@
+Como utilizar a biblioteca para gerar números aleatórios:
+    Dois structs especiais são utilizados:
+        gsl_rng_type = que contém informações estáticas sobre cada tipo de gerador
+        gsl_rng = que descreve a instancia de um gerador criado pelo gsl_rng_type
+    
+    Inicialização dos geradores:
+        1° Alocar memória para a instância
+            gsl_rng * gsl_rng_alloc ( const gsl_rng_type * T ) = Retorna um ponteiro para uma instância do Tipo "T"
+            Exemplo: gsl_rng * r = gsl_rng_alloc (gsl_rng_taus); Cria uma instância do gerador de Tausworthe
+
+            Se não tiver memória suficiente retorna um ponteiro nulo e chama o gerenciador de erros com o código GSL_ENOMEM
+            O gerador é inicializado com a seed padrão (gsl_rng_default_seed). Que é zero, mas pode ser mudada diretamente ou usando a variável
+            de ambiente GSL_RNG_SEED
+
+        2° Alimentando o gerador de números aleatórios
+            void gsl_rng_set(const gsl_rng *r, unsigned long int s) = Inicializa o gerador, se já estiver alimentado com o mesmo valor de s em duas
+            execuções diferentes o mesmo fluxo de números será gerado. Se a semente s é zero então é utilizado a semente padrão de acordo com o tipo
+            do gerador utilizado.
+
+            A maioria dos geradores aceita sementes de apenas 32 bits.
+
+    Gerando os números (funções):
+        Todas as funções descritas aqui são uniformemente distribuidas
+
+        unsigned long int gsl_rng_get(const gsl_rng *r)
+            Retorna um número aleatório do gerador r. O valor mínimio e o valor máximo dependem do algoritmo utilizado
+            Os valores mínimos e máximos são determindados utilizando as funções auxiliares:
+                gsl_rng_max()
+                gsl_rng_min()
+        
+        double gsl_rng_uniform(const gsl_rng *r)
+            Retorna um double de 0 até 1 [0,1) "Inclui o 0.0 e exclui o 1.0" Normalmente é obtido dividindo o resultado de 
+            gsl_rng_get(r) por ggsl(rn_max(r)) + 1.0 (Isso ocorre porque a medida que se aumenta o valor de um número e divide pelo seu próximo
+            o resultado vai se aproximando até que seja 1 {Provavelmente estoura a o tamaho do número, verificar depois})
+
+        double gsl_rng_uniform_pos(const gsl_rng *r)
+            Retorna um double de 0 até 1 (0,1) "Exclui o 0.0 e o 1.0". O número é obtdio chamando gsl_rng_uniform() até que se obtenha um valor não nulo
+
+        unsigned long int gsl_rng_uniform_int(const gsl_rng *r, unsigned long int n)
+            Retorna um número inteiro de 0 até n - 1 [0, n - 1]. Para geradores com valor mínimo diferente de zero, um deslocamente é aplicado
+            para que zero seja retornado com a probabilidade correta. O parâmetro n deve ser menor ou igual ao alcance do gerador r. Se o n for maior que
+            o alcance, a função chama o manipulador de erros com o código GSL_EINVAL e retorna zero. Essa função não foi feita para gerar toda a gama de
+            valores inteiros sem sinal [0, 2³² - 1]. A documentação recomenda utilizar um gerador que tenha o intervalo de zero até o maior inteiro
+            como gsl_rng_ranlxd1, gsl_rng_mt19937ou gsl_rng_taus e usar no gsl_rng_get
+
+    Funções auxiliares:
+        const char *gsl_rng_name(const gsl_rng *r)
+            Retorna um ponteiro para o nome do gerador. Por exemplo:
+            printf ("r é um gerador '%s'\n", gsl_rng_name (r)); Deveria mostrar algo como:
+            r é um gerador 'taus'
+
+        unsigned long int gsl_rng_max(const gsl_rng *r)
+            Retorna o maior valor que gsl_rng_get() consegue retornar. Note que isso vai depender do tipo do gerador que for passado como parâmetro
+        
+        unsigned long int gsl_rng_min(const gsl_rng *r)
+            Retorna o menor valor que gsl_rng_get() consegue retornar. Geralmente é zero, mas existem alguns que não conseguem retornar zero e para esses
+            o menor valor é 1
+        
+        
+
+
+
+
+
+    Liberando memória:
+        void gsl_rng_free ( gsl_rng * r ) = Libera a memória do gerador r
