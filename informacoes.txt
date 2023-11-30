@@ -23,7 +23,7 @@ Como utilizar a biblioteca para gerar números aleatórios:
         Todas as funções descritas aqui são uniformemente distribuidas
 
         unsigned long int gsl_rng_get(const gsl_rng *r)
-            Retorna um número aleatório do gerador r. O valor mínimio e o valor máximo dependem do algoritmo utilizado
+            Retorna um número aleatório do gerador r. O valor mínimo e o valor máximo dependem do algoritmo utilizado
             Os valores mínimos e máximos são determindados utilizando as funções auxiliares:
                 gsl_rng_max()
                 gsl_rng_min()
@@ -90,10 +90,58 @@ Como utilizar a biblioteca para gerar números aleatórios:
             O valor inicial de gsl_rng_default_seed é zero. Utilizando a linha de comando conseguimos definir o gerador padrão
             e a semente: $ GSL_RNG_TYPE="taus" GSL_RNG_SEED=123 ./executavel
 
+    Copiando o estado dos geradores:
+        Os métodos acima não mostram o estado do gerador, que muda de chamada pra chamada. Essa exposição pode ser útil para salvar
+        e restaurar o estado anterior de um gerador. Para isso temos as funções abaixo:
         
+        int gsl_rng_memcpy(gsl_rng *dest, const gsl_rng *src)
+            Copia um gerador 'src' para um gerador já existente 'dest' fazendo uma cópia exata de src. Os dois geradores
+            tem que ser do mesmo tipo
+        
+        gsl_rng *gsl_rng_clone(const gsl_rng *r)
+            Retorna um ponteiro para um novo gerador criado, queé uma cópia exata do gerador r
 
+    Lendo e escrevendo o estado do gerador para um arquivo binário
+        int gsl_rng_fwrite(FILE *stream, const gsl_rng *r)
+            Escreve o estado do gerador r para a stream no formato binário. Retorna 0 se foi sucedido e GSL_EFAILED caso contrário
+            Como é escrita no formato binário nativa, o arquivo pode não ser portável para outras arquiteturas
+        
+        int gsl_rng_fread(FILE *stream, gsl_rng *r)
+            Lê o estado do gerador r da strem no formato binário. O gerador r deve ser preinicializado com o gerador correto
+            já que a informação do tipo não é salva. Retorna 0 se foi sucedido e GSL_EFAILED caso contrário
 
+    Algoritmos de geradores aleatórios
+        Os seguintes geradores são recomendados para uso em simulação. Eles têm períodos extremamente longos, baixa correlação 
+        e passam na maioria dos testes de estatística . Para a fonte mais confiável de números não correlacionados 
+        os geradores RANLUX de segunda geração têm a prova mais forte de aleatoriedade.
 
+        Não teremos todos os algoritmos aqui, apenas alguns para exemplificar. Para saber todos os algoritmos possíveis tem a
+        própria documentação e a função gsl_rng_types_setup(void)
+
+        gsl_rng_type * gsl_rng_mt19937
+        O gerador original usado uma semente padrão de 4357 e escolhendo sigual a zero em gsl_rng_set()reproduz isso. 
+        Versões posteriores mudaram para 5489 como a semente padrão, você pode escolher isso explicitamente via gsl_rng_set() 
+        em vez disso, se você precisar. 
+
+        gsl_rng_type * gsl_rng_ranlxs0
+        gsl_rng_type * gsl_rng_ranlxs1
+        gsl_rng_type * gsl_rng_ranlxs2
+            O gerador ranlxs0 é uma versão de segunda geração do Algoritmo RANLUX de Luscher, que produz “luxury aleatório números".
+            Este gerador fornece saída de precisão única (24 bits) em três níveis de luxo ranlxs0, ranlxs1 e ranlxs2
+            em ordem crescente de força. Ele usa aritmética de ponto flutuante de precisão dupla internamente e pode ser 
+            significativamente mais rápido que a versão inteira do ranlux, particularmente em arquiteturas de 64 bits.
+        
+        gsl_rng_type *gsl_rng_ranlxd1
+        gsl_rng_type *gsl_rng_ranlxd2
+            Esses geradores produzem saída de precisão dupla (48 bits) do Gerador RANLXS. A biblioteca oferece dois níveis 
+            de luxo ranlxd1 e ranlxd2, em ordem crescente de força.
+
+        gsl_rng_type * gsl_rng_taus
+        gsl_rng_type * gsl_rng_taus2 
+            O taus2 deve ser usado em preferência ao taus
+        
+        gsl_rng_random_glibc2
+            É o mesmo algoritmo de rand()
 
     Liberando memória:
         void gsl_rng_free ( gsl_rng * r ) = Libera a memória do gerador r

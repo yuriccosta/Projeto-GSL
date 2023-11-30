@@ -19,23 +19,28 @@ int main(int argc, char const *argv[]){
         }
     }
     
-    const gsl_rng_type **t, **t0;
-
-    t0 = gsl_rng_types_setup ();
-
-    printf ("Available generators:\n");
-
-    for (t = t0; *t != 0; t++)
-    {
-        printf ("%s\n", (*t)->name);
-    }
+    
     printf("Lin: %d, Col: %d\n", lin, col);
 
-    gsl_rng * random = gsl_rng_alloc(gsl_rng_taus);
+    //Definindo tipo do gerador T
+    const gsl_rng_type * T = gsl_rng_random_glibc2;
 
+    // Gerando instancia r do gerador T
+    gsl_rng * r = gsl_rng_alloc(T);
 
-    printf("oi\n");
+    //Inicializando o gerador e passando a semente
+    gsl_rng_set(r, 10);
+
+    srand(10);
+
+    //Note que o gsl_rng_random_glibc2 produz o mesmo valor que rand(), é o mesmo algoritmo!!
+    for (int c = 0; c < 10; c++){
+        printf("\nGerador rand padrão: %ld\n", rand());
+        printf("Gerador rand gsl: %ld\n", gsl_rng_get(r));
+    }
     
+    //Liberando memória do gerador
+    gsl_rng_free(r);
     
     return 0;
 }
