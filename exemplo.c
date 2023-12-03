@@ -49,8 +49,8 @@ int main (void){
     printf("Rand Gsl: %ld\n\n", gsl_rng_get(gerador));
 
     // Matrizes que vão receber os números
-    double Dmatriz[10][10];
-    unsigned long int Imatriz[10][10];
+    double Dmatriz[lin][col];
+    unsigned long int Imatriz[lin][col];
 
     // 2° Gerando os números (funções)
 
