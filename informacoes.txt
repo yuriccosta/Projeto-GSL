@@ -30,7 +30,7 @@ Como utilizar a biblioteca para gerar números aleatórios:
         
         double gsl_rng_uniform(const gsl_rng *r)
             Retorna um double de 0 até 1 [0,1) "Inclui o 0.0 e exclui o 1.0" Normalmente é obtido dividindo o resultado de 
-            gsl_rng_get(r) por ggsl(rn_max(r)) + 1.0 (Isso ocorre porque a medida que se aumenta o valor de um número e divide pelo seu próximo
+            gsl_rng_get(r) por gsl_rng_max(r) + 1.0 (Isso ocorre porque a medida que se aumenta o valor de um número e divide pelo seu próximo
             o resultado vai se aproximando até que seja 1 {Provavelmente estoura a o tamaho do número, verificar depois})
 
         double gsl_rng_uniform_pos(const gsl_rng *r)
@@ -63,12 +63,12 @@ Como utilizar a biblioteca para gerar números aleatórios:
                 Retorna o tamanho do gerador r
         
         const gsl_rng_type **gsl_rng_types_setup(void)
-            Retorna um ponteiro para um array de todos os tipos de geradores disponíveis, ecerrado por um ponteiro NULL.
+            Retorna um ponteiro para um array de todos os tipos de geradores disponíveis, encerrado por um ponteiro NULL.
             Essa função deve ser chamada uma vez no começo do programa se for necessária.
 
     Variáveis de ambiente
         GSL_RNG_TYPE
-            Esta variável de ambiente especifica o gerador de números aleatórios padrão. Deve ser o nome de um gerador, como tausou mt19937.
+            Esta variável de ambiente especifica o gerador de números aleatórios padrão. Deve ser o nome de um gerador, como taus ou mt19937.
 
         GSL_RNG_SEED
             Esta variável de ambiente especifica a semente padrão para o aleatório gerador de números
@@ -85,7 +85,7 @@ Como utilizar a biblioteca para gerar números aleatórios:
         const gsl_rng_type *gsl_rng_env_setup(void)
             Lê as variáveis de ambiente  GSL_RNG_TYPE e GSL_RNG_SEED e usa seus valores para definir suas correspondentes
             variáveis da biblioteca gsl_rng_default e gsl_rng_default_seed.
-            O valor de GSL_RNG_SEEDé convertido em um unsigned long int usando a função da biblioteca C strtoul().
+            O valor de GSL_RNG_SEED é convertido em um unsigned long int usando a função da biblioteca C strtoul().
             Se não especificar um gerador para GSL_RNG_TYPE então gsl_rng_mt19937 é usado como padrão. 
             O valor inicial de gsl_rng_default_seed é zero. Utilizando a linha de comando conseguimos definir o gerador padrão
             e a semente: $ GSL_RNG_TYPE="taus" GSL_RNG_SEED=123 ./executavel
@@ -99,7 +99,7 @@ Como utilizar a biblioteca para gerar números aleatórios:
             tem que ser do mesmo tipo
         
         gsl_rng *gsl_rng_clone(const gsl_rng *r)
-            Retorna um ponteiro para um novo gerador criado, queé uma cópia exata do gerador r
+            Retorna um ponteiro para um novo gerador criado, que é uma cópia exata do gerador r
 
     Lendo e escrevendo o estado do gerador para um arquivo binário
         int gsl_rng_fwrite(FILE *stream, const gsl_rng *r)
@@ -145,3 +145,23 @@ Como utilizar a biblioteca para gerar números aleatórios:
 
     Liberando memória:
         void gsl_rng_free ( gsl_rng * r ) = Libera a memória do gerador r
+
+Tabela de performance (da própria documentação):
+    A tabela a seguir mostra o desempenho relativo de uma seleção que geradores de números aleatórios disponíveis. 
+    A qualidade de simulação mais rápida geradores são taus, gfsr4e mt19937. O geradores que oferecem a melhor qualidade
+    matematicamente comprovada são aqueles baseado no algoritmo RANLUX:
+
+        1754 k ints/sec,    870 k doubles/sec, taus
+        1613 k ints/sec,    855 k doubles/sec, gfsr4
+        1370 k ints/sec,    769 k doubles/sec, mt19937
+        565 k ints/sec,    571 k doubles/sec, ranlxs0
+        400 k ints/sec,    405 k doubles/sec, ranlxs1
+        490 k ints/sec,    389 k doubles/sec, mrg
+        407 k ints/sec,    297 k doubles/sec, ranlux
+        243 k ints/sec,    254 k doubles/sec, ranlxd1
+        251 k ints/sec,    253 k doubles/sec, ranlxs2
+        238 k ints/sec,    215 k doubles/sec, cmrg
+        247 k ints/sec,    198 k doubles/sec, ranlux389
+        141 k ints/sec,    140 k doubles/sec, ranlxd2
+
+
