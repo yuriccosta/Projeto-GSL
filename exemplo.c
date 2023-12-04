@@ -113,6 +113,11 @@ int main (void){
     printf("\nGerador original: %lf\n", gsl_rng_uniform(gerador));
     printf("Cópia 1 do gerador (O gerador original teria o mesmo valor): %lf\n", gsl_rng_uniform(copia1_gerador));
 
+    // Fechando arquivo    
+    if(fclose(copy)){
+        printf("Ocorreu um erro na hora de fechar o arquivo");
+        return 0;
+    }
 
     // Liberando memória dos geradores
     gsl_rng_free(gerador);
